@@ -1,6 +1,9 @@
 {
     "name": "mapado/elastica-query-bundle",
     "description": "Query builder bundle for ElasticSearch",
+    "autoload": {
+        "psr-4": { "Mapado\\ElasticaQueryBundle\\": "src/" }
+    },
     "require": {
         "ruflin/elastica": "1.*",
         "symfony/http-kernel": "2.*",

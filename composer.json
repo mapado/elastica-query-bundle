@@ -1,5 +1,5 @@
 {
-    "name": "mapado/elastica-query-builder",
+    "name": "mapado/elastica-query-bundle",
     "description": "Query builder bundle for ElasticSearch",
     "require": {
         "ruflin/elastica": "1.*",

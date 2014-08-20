@@ -234,12 +234,41 @@ class QueryBuilder
             return current($this->filterList);
         }
 
-        $filter = new Filter\Bool();
+
+        $boolFilters = [];
+        $andFilters = [];
         foreach ($this->filterList as $tmpFilter) {
-            $filter->addMust($tmpFilter);
+            if ($this->isAndFilter($tmpFilter)) {
+                $andFilters[] = $tmpFilter;
+            } else {
+                $boolFilters[] = $tmpFilter;
+            }
         }
 
-        return $filter;
+        $boolFilter = null;
+        $nbBoolFilters = count($boolFilters);
+        if ($nbBoolFilters > 1) {
+            $boolFilter = new Filter\Bool();
+            foreach ($boolFilters as $tmpFilter) {
+                $boolFilter->addMust($tmpFilter);
+            }
+
+            array_unshift($andFilters, $boolFilters);
+        } elseif ($nbBoolFilters == 1) {
+            $andFilters = array_merge($boolFilters, $andFilters);
+        }
+
+
+        $nbAndFilters = count($andFilters);
+        if ($nbAndFilters == 1) {
+            return current($andFilters);
+        } elseif ($nbAndFilters > 1) {
+            $filter = new Filter\BoolAnd();
+            $filter->setFilters($andFilters);
+            return $filter;
+        }
+
+        return null;
     }
 
     /**
@@ -310,5 +339,23 @@ class QueryBuilder
 
 
         return $nextPage;
+    }
+
+    /**
+     * select if the filter is more in a `BoolAnd` or a `Bool`.
+     * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
+     *
+     * @param Filter\AbstractFilter $filter
+     * @access private
+     * @return void
+     */
+    private function isAndFilter(Filter\AbstractFilter $filter)
+    {
+        $filterName = substr(get_class($filter), 16);
+
+        return $filterName === 'Script'
+            || $filterName === 'NumericRange'
+            ||  substr($filterName, 0, 3) === 'Geo'
+        ;
     }
 }

@@ -2,9 +2,6 @@
 
 namespace Mapado\ElasticaQueryBundle;
 
-use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
-use Mapado\ElasticaQueryBundle\Model\SearchResult;
-
 use \Elastica\Aggregation\AbstractAggregation;
 use \Elastica\Filter;
 use \Elastica\Filter\AbstractFilter;
@@ -12,6 +9,10 @@ use \Elastica\Query\AbstractQuery;
 use \Elastica\Query;
 use \Elastica\ResultSet;
 use \Elastica\Type;
+
+use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
+use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
+use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 class QueryBuilder
 {
@@ -253,11 +254,10 @@ class QueryBuilder
                 $boolFilter->addMust($tmpFilter);
             }
 
-            array_unshift($andFilters, $boolFilters);
+            array_unshift($andFilters, $boolFilter);
         } elseif ($nbBoolFilters == 1) {
             $andFilters = array_merge($boolFilters, $andFilters);
         }
-
 
         $nbAndFilters = count($andFilters);
         if ($nbAndFilters == 1) {
@@ -326,7 +326,7 @@ class QueryBuilder
 
         if (count($results) == 0 && $from > 0) {
             $msg = 'current page is higher than max page';
-            throw new \InvalidArgumentException($msg);
+            throw new NoMoreResultException($msg);
         } elseif ($hits > $from + $size) {
             if ($size > 0) {
                 $nextPage = ((int) $from / $size) + 2;

@@ -283,23 +283,22 @@ class QueryBuilder
         $resultSet = $this->type->search($query);
 
         if (!$this->dataTransformer) {
-            return $resultSet;
+            $results = $resultSet;
+        } else {
+            $count = count($resultSet);
+            if ($count > 0) {
+                $results = new \SplFixedArray($count);
+                foreach ($resultSet as $i => $result) {
+                    $item = $this->dataTransformer->transform($result);
+                    $results[$i] = $item;
+                }
+            } else {
+                $results = new \SplFixedArray(0);
+            }
         }
-
 
         // Generate the result object
         $nextPage = $this->getNextPage($resultSet);
-
-        $count = count($resultSet);
-        if ($count > 0) {
-            $results = new \SplFixedArray($count);
-            foreach ($resultSet as $i => $result) {
-                $item = $this->dataTransformer->transform($result);
-                $results[$i] = $item;
-            }
-        } else {
-            $results = new \SplFixedArray(0);
-        }
 
         $searchResults = new SearchResult();
         $searchResults->setResults($results)

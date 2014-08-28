@@ -3,6 +3,7 @@
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Client as BaseClient;
+use Elastica\Request;
 use Elastica\Exception\ResponseException;
 use Symfony\Component\Stopwatch\Stopwatch;
 

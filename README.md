@@ -54,3 +54,5 @@ $queryBuilder->addQuery(new \Elastica\Query\Term(['field' => 'value']))
 
 $tweets = $queryBuilder->getResult(); // return an \Elastica\ResultSet or a \Mapado\Elastica\Model\SearchResult
 ```
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae/big.png)](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae)

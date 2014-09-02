@@ -58,11 +58,11 @@ class MapadoElasticaQueryExtension extends Extension
      * treatClientSection
      *
      * @param array $clients
-     * @param ContainerInterface $container
+     * @param ContainerBuilder $container
      * @access private
      * @return void
      */
-    private function treatClientSection(array $clients, ContainerInterface $container)
+    private function treatClientSection(array $clients, ContainerBuilder $container)
     {
         // manage clients
         foreach ($clients as $clientName => $client) {
@@ -96,11 +96,11 @@ class MapadoElasticaQueryExtension extends Extension
      * treatIndexSection
      *
      * @param array $indexes
-     * @param ContainerInterface $container
+     * @param ContainerBuilder $container
      * @access private
      * @return void
      */
-    private function treatIndexSection(array $indexes, ContainerInterface $container)
+    private function treatIndexSection(array $indexes, ContainerBuilder $container)
     {
         // manage index and types
         foreach ($indexes as $indexName => $index) {
@@ -134,17 +134,23 @@ class MapadoElasticaQueryExtension extends Extension
      * treatDocumentManagerSection
      *
      * @param array $documentManagers
-     * @param ContainerInterface $container
+     * @param ContainerBuilder $container
      * @access private
      * @return void
      */
-    private function treatDocumentManagerSection(array $documentManagers, ContainerInterface $container)
+    private function treatDocumentManagerSection(array $documentManagers, ContainerBuilder $container)
     {
+        $serviceList = [];
         foreach ($documentManagers as $name => $documentManager) {
             $serviceId = sprintf('mapado.elastica.document_manager.%s', $name);
+            $serviceList[$name] = $serviceId;
+
             $service = new Definition(
                 'Mapado\ElasticaQueryBundle\DocumentManager',
-                [$this->types[$documentManager['type']]]
+                [
+                    $this->types[$documentManager['type']],
+                    new Definition('Doctrine\Common\EventManager')
+                ]
             );
 
             $definition = $container->setDefinition($serviceId, $service);
@@ -155,6 +161,10 @@ class MapadoElasticaQueryExtension extends Extension
                     [new Reference($documentManager['data_transformer'])]
                 );
             }
+        }
+
+        if ($serviceList) {
+            $container->setParameter('mapado.elastica.document_managers', $serviceList);
         }
     }
 }

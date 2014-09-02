@@ -2,27 +2,29 @@
 
 namespace Mapado\ElasticaQueryBundle;
 
-use \Elastica\Aggregation\AbstractAggregation;
-use \Elastica\Filter;
-use \Elastica\Filter\AbstractFilter;
-use \Elastica\Query\AbstractQuery;
-use \Elastica\Query;
-use \Elastica\ResultSet;
-use \Elastica\Type;
+use Doctrine\Common\EventManager;
+use Elastica\Aggregation\AbstractAggregation;
+use Elastica\Filter;
+use Elastica\Filter\AbstractFilter;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query;
+use Elastica\ResultSet;
+use Elastica\Type;
 
 use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
+use Mapado\ElasticaQueryBundle\Event\ObjectEvent;
 use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
 use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 class QueryBuilder
 {
     /**
-     * type
+     * documentManager
      *
-     * @var Type
+     * @var DocumentManager
      * @access private
      */
-    private $type;
+    private $documentManager;
 
     /**
      * filterList
@@ -75,12 +77,12 @@ class QueryBuilder
     /**
      * __construct
      *
-     * @param Type $type
+     * @param DocumentManager $documentManager
      * @access public
      */
-    public function __construct(Type $type)
+    public function __construct(DocumentManager $documentManager)
     {
-        $this->type = $type;
+        $this->documentManager = $documentManager;
         $this->filterList = [];
         $this->queryList = [];
     }
@@ -280,7 +282,7 @@ class QueryBuilder
      */
     private function execute($query)
     {
-        $resultSet = $this->type->search($query);
+        $resultSet = $this->documentManager->getElasticType()->search($query);
 
         if (!$this->dataTransformer) {
             $results = $resultSet;
@@ -291,6 +293,10 @@ class QueryBuilder
                 foreach ($resultSet as $i => $result) {
                     $item = $this->dataTransformer->transform($result);
                     $results[$i] = $item;
+
+                    $this->documentManager
+                        ->getEventManager()
+                        ->dispatchEvent('postLoad', new ObjectEvent($item));
                 }
             } else {
                 $results = new \SplFixedArray(0);

@@ -87,8 +87,7 @@ class MapadoElasticaQueryExtension extends Extension
             }
             $clientRef = new Reference($clientServiceId);
             $this->clients[$clientName] = $clientRef;
-            $container->setDefinition($clientServiceId, $clientService)
-                ->setFactoryService($clientRef);
+            $container->setDefinition($clientServiceId, $clientService);
         }
     }
 

@@ -43,6 +43,14 @@ class QueryBuilder
     private $queryList;
 
     /**
+     * sortList
+     *
+     * @var array
+     * @access private
+     */
+    private $sortList;
+
+    /**
      * aggregationList
      *
      * @var array
@@ -85,6 +93,7 @@ class QueryBuilder
         $this->documentManager = $documentManager;
         $this->filterList = [];
         $this->queryList = [];
+        $this->sortList = [];
     }
 
     /**
@@ -123,6 +132,19 @@ class QueryBuilder
     public function addQuery(AbstractQuery $query)
     {
         $this->queryList[] = $query;
+        return $this;
+    }
+
+    /**
+     * addSort
+     *
+     * @param mixed $sort Sort parameter
+     * @access public
+     * @return QueryBuilder
+     */
+    public function addSort($sort)
+    {
+        $this->sortList[] = $sort;
         return $this;
     }
 
@@ -186,6 +208,10 @@ class QueryBuilder
         }
         if ($this->maxResults) {
             $query->setSize($this->maxResults);
+        }
+
+        if (!empty($this->sortList)) {
+            $query->setSort($this->sortList);
         }
 
         if (!empty($this->aggregationList)) {

@@ -104,8 +104,9 @@ class MapadoElasticaQueryExtension extends Extension
         // manage index and types
         foreach ($indexes as $indexName => $index) {
             // register the index
+            $realIndexName = !empty($index['index_name']) ? $index['index_name'] : $indexName;
             $indexServiceId = sprintf('mapado.elastica.index.%s', $indexName);
-            $indexService = new Definition('Elastica\Index', [$indexName]);
+            $indexService = new Definition('Elastica\Index', [$realIndexName]);
             $container->setDefinition($indexServiceId, $indexService)
                 ->setFactoryService($this->clients[$index['client']])
                 ->setFactoryMethod('getIndex');

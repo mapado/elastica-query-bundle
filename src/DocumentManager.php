@@ -71,9 +71,20 @@ class DocumentManager
      */
     public function createQueryBuilder()
     {
+        return $this->handleQueryBuilder(new QueryBuilder($this));
+    }
+
+    /**
+     * handleQueryBuilder
+     *
+     * @param QueryBuilder $eqb
+     * @access public
+     * @return QueryBuilder
+     */
+    public function handleQueryBuilder(QueryBuilder $eqb)
+    {
         $this->eventManager->dispatchEvent('loadClassMetadata', new ObjectManagerEvent($this));
 
-        $eqb = new QueryBuilder($this);
         if ($this->dataTransformer) {
             $eqb->setDataTransformer($this->dataTransformer);
         }

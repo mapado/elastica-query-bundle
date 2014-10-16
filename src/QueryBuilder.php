@@ -206,7 +206,7 @@ class QueryBuilder
         if ($this->firstResults) {
             $query->setFrom($this->firstResults);
         }
-        if ($this->maxResults) {
+        if (isset($this->maxResults)) {
             $query->setSize($this->maxResults);
         }
 

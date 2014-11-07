@@ -199,7 +199,7 @@ class QueryBuilder
             $filteredQuery = new Query\Filtered($this->getQuery(), $this->getFilter());
             $query = Query::create($filteredQuery);
         } else {
-            $query = $this->getQuery();
+            $query = Query::create($this->getQuery());
         }
 
         // manage size / from

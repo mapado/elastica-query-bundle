@@ -188,12 +188,12 @@ class QueryBuilder
     }
 
     /**
-     * getResult
+     * getElasticQuery
      *
      * @access public
-     * @return Elastica\ResultSet
+     * @return Elastica\Query
      */
-    public function getResult()
+    public function getElasticQuery()
     {
         if ($this->filterList) {
             $filteredQuery = new Query\Filtered($this->getQuery(), $this->getFilter());
@@ -220,7 +220,18 @@ class QueryBuilder
             }
         }
 
-        return $this->execute($query);
+        return $query;
+    }
+
+    /**
+     * getResult
+     *
+     * @access public
+     * @return Elastica\ResultSet
+     */
+    public function getResult()
+    {
+        return $this->execute($this->getElasticQuery());
     }
 
     /**

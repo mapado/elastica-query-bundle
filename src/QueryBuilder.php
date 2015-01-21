@@ -7,14 +7,12 @@ use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
 use Elastica\Query\AbstractQuery;
-use Elastica\Query;
+use Elastica\Query as ElasticaQuery;
 use Elastica\ResultSet;
 use Elastica\Type;
 
 use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
-use Mapado\ElasticaQueryBundle\Event\ObjectEvent;
 use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
-use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 class QueryBuilder
 {
@@ -191,16 +189,17 @@ class QueryBuilder
      * getElasticQuery
      *
      * @access public
-     * @return Elastica\Query
+     * @return Query
      */
     public function getElasticQuery()
     {
         if ($this->filterList) {
-            $filteredQuery = new Query\Filtered($this->getQuery(), $this->getFilter());
-            $query = Query::create($filteredQuery);
+            $filteredQuery = new ElasticaQuery\Filtered($this->getQuery(), $this->getFilter());
+            $query = new Query($filteredQuery);
         } else {
-            $query = Query::create($this->getQuery());
+            $query = new Query($this->getQuery());
         }
+        $query->setDocumentManager($this->documentManager);
 
         // manage size / from
         if ($this->firstResults) {
@@ -231,14 +230,14 @@ class QueryBuilder
      */
     public function getResult()
     {
-        return $this->execute($this->getElasticQuery());
+        return $this->getElasticQuery()->getResult();
     }
 
     /**
      * getQuery
      *
      * @access private
-     * @return void
+     * @return \Elastica\Query\AbstractQuery
      */
     private function getQuery()
     {
@@ -250,7 +249,7 @@ class QueryBuilder
             return current($this->queryList);
         }
 
-        $query = new Query\Bool();
+        $query = new ElasticaQuery\Bool();
         foreach ($this->queryList as $tmpQuery) {
             $query->addMust($tmpQuery);
         }
@@ -308,79 +307,6 @@ class QueryBuilder
         }
 
         return null;
-    }
-
-    /**
-     * execute
-     *
-     * @param string|array|\Elastica\Query $query Array with all query data inside or a Elastica\Query object
-     * @access private
-     * @return \Iterator
-     */
-    private function execute($query)
-    {
-        $resultSet = $this->documentManager->getElasticType()->search($query);
-
-        if (!$this->dataTransformer) {
-            $results = $resultSet;
-        } else {
-            $count = count($resultSet);
-            if ($count > 0) {
-                $results = new \SplFixedArray($count);
-                foreach ($resultSet as $i => $result) {
-                    $item = $this->dataTransformer->transform($result);
-                    $results[$i] = $item;
-
-                    $this->documentManager
-                        ->getEventManager()
-                        ->dispatchEvent('postLoad', new ObjectEvent($item));
-                }
-            } else {
-                $results = new \SplFixedArray(0);
-            }
-        }
-
-        // Generate the result object
-        $nextPage = $this->getNextPage($resultSet);
-
-        $searchResults = new SearchResult();
-        $searchResults->setResults($results)
-            ->setNextPage($nextPage)
-            ->setBaseResults($resultSet);
-
-        return $searchResults;
-    }
-
-    /**
-     * getNextPage
-     *
-     * @param ResultSet $results
-     * @param int $from
-     * @access private
-     * @return int
-     */
-    private function getNextPage(ResultSet $results)
-    {
-        $query = $results->getQuery();
-        $from = $query->hasParam('from') ? $query->getParam('from') : 0;
-        $size = $query->hasParam('size') ? $query->getParam('size') : 10;
-        $hits = $results->getTotalHits();
-
-        if (count($results) == 0 && $from > 0) {
-            $msg = 'current page is higher than max page';
-            throw new NoMoreResultException($msg);
-        } elseif ($hits > $from + $size) {
-            if ($size > 0) {
-                $nextPage = ((int) $from / $size) + 2;
-            } else {
-                $nextPage = 2;
-            }
-        } else {
-            $nextPage = null;
-        }
-
-
-        return $nextPage;
     }
 
     /**

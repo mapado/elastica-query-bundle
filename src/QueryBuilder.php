@@ -12,7 +12,6 @@ use Elastica\ResultSet;
 use Elastica\Type;
 
 use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
-use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
 
 class QueryBuilder
 {

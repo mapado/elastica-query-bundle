@@ -7,6 +7,7 @@ use Elastica\ResultSet;
 use Elastica\Type;
 use Mapado\ElasticaQueryBundle\Event\ObjectEvent;
 use Mapado\ElasticaQueryBundle\Event\ObjectManagerEvent;
+use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
 use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 use Mapado\ElasticaQueryBundle\Model\SearchResult;
 use Mapado\ElasticaQueryBundle\QueryBuilder;

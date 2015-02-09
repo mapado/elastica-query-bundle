@@ -149,7 +149,9 @@ class MapadoElasticaQueryExtension extends Extension
                 'Mapado\ElasticaQueryBundle\DocumentManager',
                 [
                     $this->types[$documentManager['type']],
-                    new Definition('Doctrine\Common\EventManager')
+                    new Definition('Doctrine\Common\EventManager'),
+                    !empty($documentManager['query_builder_classname']) ?
+                        $documentManager['query_builder_classname'] : null,
                 ]
             );
 

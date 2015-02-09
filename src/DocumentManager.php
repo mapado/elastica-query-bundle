@@ -38,6 +38,13 @@ class DocumentManager
      */
     private $dataTransformer;
 
+    /**
+     * queryBuilderClass
+     *
+     * @var string
+     * @access private
+     */
+    private $queryBuilderClass;
 
     /**
      * __construct
@@ -46,10 +53,11 @@ class DocumentManager
      * @param EventManager $eventManager
      * @access public
      */
-    public function __construct(Type $type, EventManager $eventManager)
+    public function __construct(Type $type, EventManager $eventManager, $queryBuilderClass = null)
     {
         $this->type = $type;
         $this->eventManager = $eventManager;
+        $this->queryBuilderClass = $queryBuilderClass;
     }
 
     /**
@@ -75,7 +83,19 @@ class DocumentManager
      */
     public function createQueryBuilder()
     {
-        return $this->handleQueryBuilder(new QueryBuilder($this));
+        if ($this->queryBuilderClass) {
+            $queryBuilderClass = $this->queryBuilderClass;
+            $queryBuilderInstance = new $queryBuilderClass($this);
+            if (!$queryBuilderInstance instanceof QueryBuilder) {
+                throw new \InvalidArgumentException(
+                    '$queryBuilderClass must be an instance of \Mapado\ElasticaQueryBuilder\QueryBuilder'
+                );
+            }
+        } else {
+            $queryBuilderInstance = new QueryBuilder($this);
+        }
+
+        return $this->handleQueryBuilder($queryBuilderInstance);
     }
 
     /**

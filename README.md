@@ -31,6 +31,7 @@ mapado_elastica_query:
         tweety:
             type: mapado.elastica.type.twitter.tweet
             # data_transformer: my.model.transformer #optional, must implements Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface
+            # query_builder_classname: Acme\Demo\QueryBuilder\TweetyQueryBuilder # @see "Overide Query Builder" section
 ```
 
 ## Usage
@@ -54,5 +55,18 @@ $queryBuilder->addQuery(new \Elastica\Query\Term(['field' => 'value']))
 
 $tweets = $queryBuilder->getResult(); // return a \Mapado\Elastica\Model\SearchResult
 ```
+
+### Overide Query Builder
+You can override querybuilder doing this is your config file:
+```yaml
+mapado_elastica_query:
+    # ...
+    document_managers:
+        tweety:
+            type: mapado.elastica.type.twitter.tweet
+            query_builder_classname: Acme\Demo\QueryBuilder\TweetyQueryBuilder
+```
+
+The QueryBuilder class must inherit from Mapado\ElasticaQueryBundle\QueryBuilder
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae/big.png)](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae)

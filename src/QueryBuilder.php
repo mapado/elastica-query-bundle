@@ -7,8 +7,6 @@ use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query as ElasticaQuery;
-use Elastica\ResultSet;
-use Elastica\Type;
 
 class QueryBuilder
 {

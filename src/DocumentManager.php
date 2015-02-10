@@ -109,9 +109,6 @@ class DocumentManager
     {
         $this->eventManager->dispatchEvent('loadClassMetadata', new ObjectManagerEvent($this));
 
-        if ($this->dataTransformer) {
-            $eqb->setDataTransformer($this->dataTransformer);
-        }
         return $eqb;
     }
 

@@ -2,7 +2,6 @@
 
 namespace Mapado\ElasticaQueryBundle;
 
-use Doctrine\Common\EventManager;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
@@ -10,8 +9,6 @@ use Elastica\Query\AbstractQuery;
 use Elastica\Query as ElasticaQuery;
 use Elastica\ResultSet;
 use Elastica\Type;
-
-use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 
 class QueryBuilder
 {
@@ -72,14 +69,6 @@ class QueryBuilder
     private $maxResults;
 
     /**
-     * dataTransformer
-     *
-     * @var mixed
-     * @access private
-     */
-    private $dataTransformer;
-
-    /**
      * __construct
      *
      * @param DocumentManager $documentManager
@@ -91,19 +80,6 @@ class QueryBuilder
         $this->filterList = [];
         $this->queryList = [];
         $this->sortList = [];
-    }
-
-    /**
-     * setDataTransformer
-     *
-     * @param DataTransformerInterface $dataTransformer
-     * @access public
-     * @return QueryBuilder
-     */
-    public function setDataTransformer(DataTransformerInterface $dataTransformer)
-    {
-        $this->dataTransformer = $dataTransformer;
-        return $this;
     }
 
     /**

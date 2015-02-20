@@ -39,7 +39,7 @@ class ElasticaDataCollector extends DataCollector
     {
         $time = 0;
         foreach ($this->data['queries'] as $query) {
-            if ($query['response']->getStatus() == 200) {
+            if ($query['response']->getStatus() == 200 && isset($query['response']->getData()['took'])) {
                 $time += $query['response']->getData()['took'];
             }
         }

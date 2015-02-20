@@ -70,7 +70,7 @@
                         <code class="elastica_data_pretty_{{key}}" style="display: none;"><pre>{{ request.data|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></code>
                     </div>
 
-                    {% if response.status == 200 %}
+                    {% if response.status == 200 and response.data.took is defined %}
                         <div>
                             <small>
                                 <strong>Time</strong>: {{ '%0.2f'|format(response.data.took) }} ms

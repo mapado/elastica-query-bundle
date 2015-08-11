@@ -35,15 +35,15 @@ mapado_elastica_query:
 ```
 
 ## Usage
-### Get elastica objects
-You can fetch basic Elastica objects just by doing this:
+### Get DocumentManager
 ```php
 $client = $this->get('mapado.elastica.client.client_name'); // return a \Elastica\Client object
 $index = $this->get('mapado.elastica.index.twitter');       // return a \Elastica\Index object
 $type = $this->get('mapado.elastica.type.twitter.tweet');   // return a \Elastica\Type object
 ```
 
-### Get DocumentManager
+### Get elastica objects
+You can fetch basic Elastica objects just by doing this:
 ```php
 $documentManager = $this->get('mapado.elastica.document_manager.tweety'); // return a \Mapado\ElasticaQueryBundle\DocumentManager
 $queryBuilder = $documentManager->createQueryBuilder();

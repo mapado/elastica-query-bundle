@@ -67,6 +67,14 @@ class QueryBuilder
     private $maxResults;
 
     /**
+     * minScore
+     *
+     * @var int
+     * @access private
+     */
+    private $minScore;
+
+    /**
      * __construct
      *
      * @param DocumentManager $documentManager
@@ -159,6 +167,18 @@ class QueryBuilder
     }
 
     /**
+     * setMinScore
+     *
+     * @access public
+     * @return QueryBuilder
+     */
+    public function setMinScore($minScore)
+    {
+        $this->minScore = $minScore;
+        return $this;
+    }
+
+    /**
      * getElasticQuery
      *
      * @access public
@@ -184,6 +204,10 @@ class QueryBuilder
 
         if (!empty($this->sortList)) {
             $query->setSort($this->sortList);
+        }
+
+        if (isset($this->minScore)) {
+            $query->setMinScore($this->minScore);
         }
 
         if (!empty($this->aggregationList)) {

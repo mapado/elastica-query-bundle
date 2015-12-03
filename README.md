@@ -31,7 +31,7 @@ mapado_elastica_query:
         tweety:
             type: mapado.elastica.type.twitter.tweet
             # data_transformer: my.model.transformer #optional, must implements Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface
-            # query_builder_classname: Acme\Demo\QueryBuilder\TweetyQueryBuilder # @see "Overide Query Builder" section
+            # query_builder_classname: Acme\\Demo\\QueryBuilder\\TweetyQueryBuilder # @see "Overide Query Builder" section
 ```
 
 ## Usage
@@ -64,7 +64,7 @@ mapado_elastica_query:
     document_managers:
         tweety:
             type: mapado.elastica.type.twitter.tweet
-            query_builder_classname: Acme\Demo\QueryBuilder\TweetyQueryBuilder
+            query_builder_classname: "Acme\\Demo\\QueryBuilder\\TweetyQueryBuilder"
 ```
 
 The QueryBuilder class must inherit from Mapado\ElasticaQueryBundle\QueryBuilder

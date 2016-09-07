@@ -246,7 +246,7 @@ class QueryBuilder
             return current($this->queryList);
         }
 
-        $query = new ElasticaQuery\Bool();
+        $query = new ElasticaQuery\BoolQuery();
         foreach ($this->queryList as $tmpQuery) {
             $query->addMust($tmpQuery);
         }
@@ -284,7 +284,7 @@ class QueryBuilder
         $boolFilter = null;
         $nbBoolFilters = count($boolFilters);
         if ($nbBoolFilters > 1) {
-            $boolFilter = new Filter\Bool();
+            $boolFilter = new Filter\BoolFilter();
             foreach ($boolFilters as $tmpFilter) {
                 $boolFilter->addMust($tmpFilter);
             }
@@ -307,7 +307,7 @@ class QueryBuilder
     }
 
     /**
-     * select if the filter is more in a `BoolAnd` or a `Bool`.
+     * select if the filter is more in a `BoolAnd` or a `BoolFilter`.
      * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
      *
      * @param Filter\AbstractFilter $filter

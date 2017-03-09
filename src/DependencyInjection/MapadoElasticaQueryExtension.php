@@ -108,8 +108,10 @@ class MapadoElasticaQueryExtension extends Extension
             $indexServiceId = sprintf('mapado.elastica.index.%s', $indexName);
             $indexService = new Definition('Elastica\Index', [$realIndexName]);
             $container->setDefinition($indexServiceId, $indexService)
-                ->setFactoryService($this->clients[$index['client']])
-                ->setFactoryMethod('getIndex');
+                ->setFactory([
+                    $this->clients[$index['client']],
+                    'getIndex',
+                ]);
 
             // register the types
             $indexRef = new Reference($indexServiceId);
@@ -123,8 +125,10 @@ class MapadoElasticaQueryExtension extends Extension
                     $this->types[$typeServiceId] = new Reference($typeServiceId);
 
                     $container->setDefinition($typeServiceId, $typeService)
-                        ->setFactoryService($indexRef)
-                        ->setFactoryMethod('getType');
+                        ->setFactory([
+                            $indexRef,
+                            'getType'
+                        ]);
                 }
             }
         }

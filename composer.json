@@ -5,9 +5,9 @@
         "psr-4": { "Mapado\\ElasticaQueryBundle\\": "src/" }
     },
     "require": {
-        "symfony/http-kernel": "~2.0",
-        "symfony/config": "~2.0",
-        "symfony/dependency-injection": "~2.0",
+        "symfony/http-kernel": "^2.7||^3.0",
+        "symfony/config": "^2.7||^3.0",
+        "symfony/dependency-injection": "^2.7||^3.0",
         "doctrine/common": "~2.0",
         "ruflin/elastica": "~2.2"
     },

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle\Model;
 
 use Elastica\ResultSet;
@@ -10,7 +12,6 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      * results
      *
      * @var \Iterator
-     * @access private
      */
     private $results;
 
@@ -18,7 +19,6 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      * position
      *
      * @var int
-     * @access private
      */
     private $position;
 
@@ -26,7 +26,6 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      * nextPage
      *
      * @var int
-     * @access private
      */
     private $nextPage;
 
@@ -34,15 +33,11 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      * baseResults
      *
      * @var ResultSet
-     * @access private
      */
     private $baseResults;
 
     /**
      * __construct
-     *
-     * @access public
-     * @return void
      */
     public function __construct()
     {
@@ -51,10 +46,23 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     }
 
     /**
+     * __call
+     *
+     * @param string $name method name
+     * @param array $arguments arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, array $arguments)
+    {
+        return call_user_func_array([$this->baseResults, $name], $arguments);
+    }
+
+    /**
      * setResults
      *
      * @param \Iterator $results
-     * @access public
+     *
      * @return SearchResult
      */
     public function setResults(\ArrayAccess $results)
@@ -91,10 +99,9 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * current
      *
-     * @access public
      * @return mixed
      */
-    public function current ()
+    public function current()
     {
         return $this->results[$this->position];
     }
@@ -102,32 +109,25 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * key
      *
-     * @access public
      * @return int
      */
-    public function key ()
+    public function key()
     {
         return $this->position;
     }
 
     /**
      * next
-     *
-     * @access public
-     * @return void
      */
-    public function next ()
+    public function next()
     {
-        $this->position++;
+        ++$this->position;
     }
 
     /**
      * rewind
-     *
-     * @access public
-     * @return void
      */
-    public function rewind ()
+    public function rewind()
     {
         $this->position = 0;
     }
@@ -135,10 +135,9 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * valid
      *
-     * @access public
-     * @return boolean
+     * @return bool
      */
-    public function valid ()
+    public function valid()
     {
         return isset($this->results[$this->position]);
     }
@@ -146,10 +145,9 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * count
      *
-     * @access public
      * @return int
      */
-    public function count ()
+    public function count()
     {
         return count($this->results);
     }
@@ -158,7 +156,7 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      * setNextPage
      *
      * @param int $page
-     * @access public
+     *
      * @return SearchResult
      */
     public function setNextPage($page)
@@ -171,7 +169,6 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * getNextPage
      *
-     * @access public
      * @return int
      */
     public function getNextPage()
@@ -182,18 +179,5 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     public function jsonSerialize()
     {
         return $this->results;
-    }
-
-    /**
-     * __call
-     *
-     * @param string $name method name
-     * @param array $arguments arguments
-     * @access public
-     * @return mixed
-     */
-    public function __call($name, array $arguments)
-    {
-        return call_user_func_array([$this->baseResults, $name], $arguments);
     }
 }

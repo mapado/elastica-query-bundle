@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Doctrine\Common\EventManager;
 use Elastica\ResultSet;
 use Elastica\Type;
+use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 use Mapado\ElasticaQueryBundle\Event\ObjectEvent;
 use Mapado\ElasticaQueryBundle\Event\ObjectManagerEvent;
 use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
-use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 use Mapado\ElasticaQueryBundle\Model\SearchResult;
-use Mapado\ElasticaQueryBundle\QueryBuilder;
 
 class DocumentManager
 {
@@ -18,7 +19,6 @@ class DocumentManager
      * type
      *
      * @var Type
-     * @access private
      */
     private $type;
 
@@ -26,7 +26,6 @@ class DocumentManager
      * eventManager
      *
      * @var EventManager
-     * @access private
      */
     private $eventManager;
 
@@ -34,7 +33,6 @@ class DocumentManager
      * dataTransformer
      *
      * @var DataTransformerInterface
-     * @access private
      */
     private $dataTransformer;
 
@@ -42,7 +40,6 @@ class DocumentManager
      * queryBuilderClass
      *
      * @var string
-     * @access private
      */
     private $queryBuilderClass;
 
@@ -51,7 +48,6 @@ class DocumentManager
      *
      * @param Type $type
      * @param EventManager $eventManager
-     * @access public
      */
     public function __construct(Type $type, EventManager $eventManager, $queryBuilderClass = null)
     {
@@ -64,12 +60,13 @@ class DocumentManager
      * setDataTransformer
      *
      * @param DataTransformerInterface $dataTransformer
-     * @access public
+     *
      * @return DocumentManager
      */
     public function setDataTransformer(DataTransformerInterface $dataTransformer)
     {
         $this->dataTransformer = $dataTransformer;
+
         return $this;
     }
 
@@ -77,8 +74,8 @@ class DocumentManager
      * createQueryBuilder
      *
      * @param Type $index
+     *
      * @return \Mapado\FrontBundle\Search\ActivityQueryBuilder
-     * @access public
      * @return QueryBuilder
      */
     public function createQueryBuilder()
@@ -102,7 +99,7 @@ class DocumentManager
      * handleQueryBuilder
      *
      * @param QueryBuilder $eqb
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function handleQueryBuilder(QueryBuilder $eqb)
@@ -115,7 +112,6 @@ class DocumentManager
     /**
      * getEventManager
      *
-     * @access public
      * @return EventManager
      */
     public function getEventManager()
@@ -129,7 +125,7 @@ class DocumentManager
      *
      * @param mixed $event
      * @param mixed $listener
-     * @access public
+     *
      * @return mixed
      */
     public function addEventListener($event, $listener)
@@ -140,7 +136,6 @@ class DocumentManager
     /**
      * getElasticType
      *
-     * @access public
      * @return Type
      */
     public function getElasticType()
@@ -184,7 +179,7 @@ class DocumentManager
      *
      * @param ResultSet $results
      * @param int $from
-     * @access private
+     *
      * @return int
      */
     private function getNextPage(ResultSet $results)
@@ -194,7 +189,7 @@ class DocumentManager
         $size = $query->hasParam('size') ? $query->getParam('size') : 10;
         $hits = $results->getTotalHits();
 
-        if (count($results) == 0 && $from > 0) {
+        if (0 == count($results) && $from > 0) {
             $msg = 'current page is higher than max page';
             throw new NoMoreResultException($msg);
         } elseif ($hits > $from + $size) {
@@ -206,7 +201,6 @@ class DocumentManager
         } else {
             $nextPage = null;
         }
-
 
         return $nextPage;
     }

@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Client as BaseClient;
-use Elastica\Request;
 use Elastica\Exception\ResponseException;
-use Symfony\Component\Stopwatch\Stopwatch;
-
+use Elastica\Request;
 use Mapado\ElasticaQueryBundle\DataCollector\ElasticaDataCollector;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class Client extends BaseClient
 {
@@ -15,7 +16,6 @@ class Client extends BaseClient
      * stopwatch
      *
      * @var Stopwatch|null
-     * @access private
      */
     private $stopwatch;
 
@@ -23,7 +23,6 @@ class Client extends BaseClient
      * dataCollector
      *
      * @var ElasticaDataCollector
-     * @access private
      */
     private $dataCollector;
 
@@ -31,12 +30,13 @@ class Client extends BaseClient
      * setStopwatch
      *
      * @param Stopwatch $stopwatch
-     * @access public
+     *
      * @return Client
      */
     public function setStopwatch(Stopwatch $stopwatch)
     {
         $this->stopwatch = $stopwatch;
+
         return $this;
     }
 
@@ -44,19 +44,20 @@ class Client extends BaseClient
      * setDataCollector
      *
      * @param ElasticaDataCollector $dataCollector
-     * @access public
+     *
      * @return Client
      */
     public function setDataCollector(ElasticaDataCollector $dataCollector)
     {
         $this->dataCollector = $dataCollector;
+
         return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function request($path, $method = Request::GET, $data = array(), array $query = array())
+    public function request($path, $method = Request::GET, $data = [], array $query = [])
     {
         $exceptionOccured = false;
 

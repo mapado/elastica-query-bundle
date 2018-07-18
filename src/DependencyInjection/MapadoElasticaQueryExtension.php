@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -21,7 +23,6 @@ class MapadoElasticaQueryExtension extends Extension
      * clients
      *
      * @var array
-     * @access private
      */
     private $clients;
 
@@ -29,19 +30,18 @@ class MapadoElasticaQueryExtension extends Extension
      * types
      *
      * @var array
-     * @access private
      */
     private $types;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
         if (empty($config['clients']) || empty($config['indexes'])) {
@@ -59,8 +59,6 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $clients
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatClientSection(array $clients, ContainerBuilder $container)
     {
@@ -96,8 +94,6 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $indexes
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatIndexSection(array $indexes, ContainerBuilder $container)
     {
@@ -127,7 +123,7 @@ class MapadoElasticaQueryExtension extends Extension
                     $container->setDefinition($typeServiceId, $typeService)
                         ->setFactory([
                             $indexRef,
-                            'getType'
+                            'getType',
                         ]);
                 }
             }
@@ -139,8 +135,6 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $documentManagers
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatDocumentManagerSection(array $documentManagers, ContainerBuilder $container)
     {

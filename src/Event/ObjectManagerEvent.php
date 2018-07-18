@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle\Event;
 
 use Doctrine\Common\EventArgs;
@@ -10,7 +12,6 @@ class ObjectManagerEvent extends EventArgs
      * objectManager
      *
      * @var object
-     * @access private
      */
     private $objectManager;
 
@@ -18,7 +19,6 @@ class ObjectManagerEvent extends EventArgs
      * __construct
      *
      * @param object $objectManager
-     * @access public
      */
     public function __construct($objectManager)
     {
@@ -28,7 +28,6 @@ class ObjectManagerEvent extends EventArgs
     /**
      * getObjectManager
      *
-     * @access public
      * @return object
      */
     public function getObjectManager()

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 class CompilerPass implements CompilerPassInterface
@@ -12,8 +14,6 @@ class CompilerPass implements CompilerPassInterface
      * process
      *
      * @param ContainerBuilder $container
-     * @access public
-     * @return void
      */
     public function process(ContainerBuilder $container)
     {

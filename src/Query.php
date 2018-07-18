@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Query as ElasticaQuery;
 
 /**
  * Class Query
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Query extends ElasticaQuery
@@ -14,7 +17,6 @@ class Query extends ElasticaQuery
      * documentManager
      *
      * @var DocumentManager
-     * @access private
      */
     private $documentManager;
 
@@ -22,20 +24,18 @@ class Query extends ElasticaQuery
      * setDocumentManager
      *
      * @param DocumentManager $documentManager
-     * @access public
+     *
      * @return Query
      */
     public function setDocumentManager(DocumentManager $documentManager)
     {
         $this->documentManager = $documentManager;
+
         return $this;
     }
 
     /**
      * getResults
-     *
-     * @access public
-     * @return void
      */
     public function getResult()
     {

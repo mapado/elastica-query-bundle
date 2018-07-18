@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Aggregation\AbstractAggregation;
@@ -14,7 +16,6 @@ class QueryBuilder
      * documentManager
      *
      * @var DocumentManager
-     * @access private
      */
     private $documentManager;
 
@@ -22,7 +23,6 @@ class QueryBuilder
      * filterList
      *
      * @var array
-     * @access private
      */
     private $filterList;
 
@@ -30,7 +30,6 @@ class QueryBuilder
      * queryList
      *
      * @var array
-     * @access private
      */
     private $queryList;
 
@@ -38,7 +37,6 @@ class QueryBuilder
      * sortList
      *
      * @var array
-     * @access private
      */
     private $sortList;
 
@@ -46,7 +44,6 @@ class QueryBuilder
      * aggregationList
      *
      * @var array
-     * @access private
      */
     private $aggregationList;
 
@@ -54,7 +51,6 @@ class QueryBuilder
      * firstResults
      *
      * @var int
-     * @access private
      */
     private $firstResults;
 
@@ -62,7 +58,6 @@ class QueryBuilder
      * maxResults
      *
      * @var int
-     * @access private
      */
     private $maxResults;
 
@@ -70,7 +65,6 @@ class QueryBuilder
      * minScore
      *
      * @var int
-     * @access private
      */
     private $minScore;
 
@@ -78,7 +72,6 @@ class QueryBuilder
      * __construct
      *
      * @param DocumentManager $documentManager
-     * @access public
      */
     public function __construct(DocumentManager $documentManager)
     {
@@ -92,12 +85,13 @@ class QueryBuilder
      * addFilter
      *
      * @param AbstractFilter $filter
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function addFilter(AbstractFilter $filter)
     {
         $this->filterList[] = $filter;
+
         return $this;
     }
 
@@ -105,12 +99,13 @@ class QueryBuilder
      * addQuery
      *
      * @param AbstractQuery $query
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function addQuery(AbstractQuery $query)
     {
         $this->queryList[] = $query;
+
         return $this;
     }
 
@@ -118,12 +113,13 @@ class QueryBuilder
      * addSort
      *
      * @param mixed $sort Sort parameter
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function addSort($sort)
     {
         $this->sortList[] = $sort;
+
         return $this;
     }
 
@@ -131,12 +127,13 @@ class QueryBuilder
      * addAggregation
      *
      * @param AbstractAggregation $aggregation
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function addAggregation(AbstractAggregation $aggregation)
     {
         $this->aggregationList[] = $aggregation;
+
         return $this;
     }
 
@@ -144,12 +141,13 @@ class QueryBuilder
      * setMaxResults
      *
      * @param mixed $maxResults
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function setMaxResults($maxResults)
     {
         $this->maxResults = $maxResults;
+
         return $this;
     }
 
@@ -157,31 +155,31 @@ class QueryBuilder
      * setFirstResults
      *
      * @param int $firstResults
-     * @access public
+     *
      * @return QueryBuilder
      */
     public function setFirstResults($firstResults)
     {
         $this->firstResults = $firstResults;
+
         return $this;
     }
 
     /**
      * setMinScore
      *
-     * @access public
      * @return QueryBuilder
      */
     public function setMinScore($minScore)
     {
         $this->minScore = $minScore;
+
         return $this;
     }
 
     /**
      * getElasticQuery
      *
-     * @access public
      * @return Query
      */
     public function getElasticQuery()
@@ -222,7 +220,6 @@ class QueryBuilder
     /**
      * getResult
      *
-     * @access public
      * @return Elastica\ResultSet
      */
     public function getResult()
@@ -233,16 +230,15 @@ class QueryBuilder
     /**
      * getQuery
      *
-     * @access private
      * @return \Elastica\Query\AbstractQuery
      */
     private function getQuery()
     {
         if (!$this->queryList) {
-            return null;
+            return;
         }
 
-        if (count($this->queryList) == 1) {
+        if (1 == count($this->queryList)) {
             return current($this->queryList);
         }
 
@@ -257,19 +253,17 @@ class QueryBuilder
     /**
      * getFilter
      *
-     * @access private
      * @return AbstractFilter
      */
     private function getFilter()
     {
         if (!$this->filterList) {
-            return null;
+            return;
         }
 
-        if (count($this->filterList) == 1) {
+        if (1 == count($this->filterList)) {
             return current($this->filterList);
         }
-
 
         $boolFilters = [];
         $andFilters = [];
@@ -290,37 +284,37 @@ class QueryBuilder
             }
 
             array_unshift($andFilters, $boolFilter);
-        } elseif ($nbBoolFilters == 1) {
+        } elseif (1 == $nbBoolFilters) {
             $andFilters = array_merge($boolFilters, $andFilters);
         }
 
         $nbAndFilters = count($andFilters);
-        if ($nbAndFilters == 1) {
+        if (1 == $nbAndFilters) {
             return current($andFilters);
         } elseif ($nbAndFilters > 1) {
             $filter = new Filter\BoolAnd();
             $filter->setFilters($andFilters);
+
             return $filter;
         }
 
-        return null;
+        return;
     }
 
     /**
      * select if the filter is more in a `BoolAnd` or a `BoolFilter`.
+     *
      * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
      *
      * @param Filter\AbstractFilter $filter
-     * @access private
-     * @return void
      */
     private function isAndFilter(Filter\AbstractFilter $filter)
     {
         $filterName = substr(get_class($filter), 16);
 
-        return $filterName === 'Script'
-            || $filterName === 'NumericRange'
-            ||  substr($filterName, 0, 3) === 'Geo'
+        return 'Script' === $filterName
+            || 'NumericRange' === $filterName
+            || 'Geo' === substr($filterName, 0, 3)
         ;
     }
 }

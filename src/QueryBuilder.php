@@ -220,7 +220,7 @@ class QueryBuilder
     /**
      * getResult
      *
-     * @return Elastica\ResultSet
+     * @return \Elastica\ResultSet
      */
     public function getResult()
     {
@@ -229,13 +229,11 @@ class QueryBuilder
 
     /**
      * getQuery
-     *
-     * @return \Elastica\Query\AbstractQuery
      */
-    private function getQuery()
+    private function getQuery(): ?AbstractQuery
     {
         if (!$this->queryList) {
-            return;
+            return null;
         }
 
         if (1 == count($this->queryList)) {
@@ -252,13 +250,11 @@ class QueryBuilder
 
     /**
      * getFilter
-     *
-     * @return AbstractFilter
      */
-    private function getFilter()
+    private function getFilter(): ?AbstractFilter
     {
         if (!$this->filterList) {
-            return;
+            return null;
         }
 
         if (1 == count($this->filterList)) {
@@ -298,7 +294,7 @@ class QueryBuilder
             return $filter;
         }
 
-        return;
+        return null;
     }
 
     /**

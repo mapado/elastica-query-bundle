@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mapado\ElasticaQueryBundle;
 
 use Doctrine\Common\EventManager;
+use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Type;
 use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
@@ -32,7 +33,7 @@ class DocumentManager
     /**
      * dataTransformer
      *
-     * @var DataTransformerInterface
+     * @var ?DataTransformerInterface
      */
     private $dataTransformer;
 
@@ -72,13 +73,8 @@ class DocumentManager
 
     /**
      * createQueryBuilder
-     *
-     * @param Type $index
-     *
-     * @return \Mapado\FrontBundle\Search\ActivityQueryBuilder
-     * @return QueryBuilder
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         if ($this->queryBuilderClass) {
             $queryBuilderClass = $this->queryBuilderClass;
@@ -125,12 +121,10 @@ class DocumentManager
      *
      * @param mixed $event
      * @param mixed $listener
-     *
-     * @return mixed
      */
-    public function addEventListener($event, $listener)
+    public function addEventListener($event, $listener): void
     {
-        return $this->eventManager->addEventListener($event, $listener);
+        $this->eventManager->addEventListener($event, $listener);
     }
 
     /**
@@ -152,6 +146,10 @@ class DocumentManager
             if ($count > 0) {
                 $results = new \SplFixedArray($count);
                 foreach ($resultSet as $i => $result) {
+                    if (!$result instanceof Result) {
+                        continue;
+                    }
+
                     $item = $this->dataTransformer->transform($result);
                     $results[$i] = $item;
 
@@ -176,13 +174,8 @@ class DocumentManager
 
     /**
      * getNextPage
-     *
-     * @param ResultSet $results
-     * @param int $from
-     *
-     * @return int
      */
-    private function getNextPage(ResultSet $results)
+    private function getNextPage(ResultSet $results): ?int
     {
         $query = $results->getQuery();
         $from = $query->hasParam('from') ? $query->getParam('from') : 0;
@@ -194,7 +187,8 @@ class DocumentManager
             throw new NoMoreResultException($msg);
         } elseif ($hits > $from + $size) {
             if ($size > 0) {
-                $nextPage = ((int) $from / $size) + 2;
+                $tmp = (int) ($from / $size);
+                $nextPage = $tmp + 2;
             } else {
                 $nextPage = 2;
             }

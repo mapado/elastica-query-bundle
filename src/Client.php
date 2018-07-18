@@ -59,7 +59,7 @@ class Client extends BaseClient
      */
     public function request($path, $method = Request::GET, $data = [], array $query = [])
     {
-        $exceptionOccured = false;
+        $occuredException = null;
 
         if (isset($this->stopwatch)) {
             $this->stopwatch->start('mpd_elastica', 'mapado_elastica_query');
@@ -69,7 +69,7 @@ class Client extends BaseClient
             $response = parent::request($path, $method, $data, $query);
         } catch (ResponseException $e) {
             $response = $e->getResponse();
-            $exceptionOccured = true;
+            $occuredException = $e;
         }
 
         if (isset($this->dataCollector)) {
@@ -83,8 +83,8 @@ class Client extends BaseClient
             $this->stopwatch->stop('mpd_elastica');
         }
 
-        if ($exceptionOccured) {
-            throw $e;
+        if (null !== $occuredException) {
+            throw $occuredException;
         }
 
         return $response;

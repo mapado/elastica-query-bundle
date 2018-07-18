@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\ElasticaQueryBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -36,6 +37,10 @@ class Configuration implements ConfigurationInterface
     {
         $builder = new TreeBuilder();
         $node = $builder->root('types');
+
+        if (!$node instanceof ArrayNodeDefinition) {
+            throw new \InvalidArgumentException('node must be an instance of ' . ArrayNodeDefinition::class);
+        }
 
         $node
             ->useAttributeAsKey('name')

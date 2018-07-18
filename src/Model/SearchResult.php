@@ -11,7 +11,7 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * results
      *
-     * @var \Iterator
+     * @var array|\ArrayAccess
      */
     private $results;
 
@@ -25,7 +25,7 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * nextPage
      *
-     * @var int
+     * @var ?int
      */
     private $nextPage;
 
@@ -48,24 +48,22 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * __call
      *
-     * @param string $name method name
-     * @param array $arguments arguments
-     *
      * @return mixed
      */
-    public function __call($name, array $arguments)
+    public function __call(string $name, array $arguments)
     {
-        return call_user_func_array([$this->baseResults, $name], $arguments);
+        $callable = [$this->baseResults, $name];
+        if (!is_callable($callable)) {
+            throw new \InvalidArgumentException(sprintf('method %s::%s is not callable', get_class($this->baseResults), $name));
+        }
+
+        return call_user_func_array($callable, $arguments);
     }
 
     /**
      * setResults
-     *
-     * @param \Iterator $results
-     *
-     * @return SearchResult
      */
-    public function setResults(\ArrayAccess $results)
+    public function setResults(\ArrayAccess $results): self
     {
         $this->results = $results;
 
@@ -149,17 +147,17 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      */
     public function count()
     {
-        return count($this->results);
+        if (is_array($this->results) || $this->results instanceof \Countable) {
+            return count($this->results);
+        }
+
+        return count($this);
     }
 
     /**
      * setNextPage
-     *
-     * @param int $page
-     *
-     * @return SearchResult
      */
-    public function setNextPage($page)
+    public function setNextPage(?int $page): self
     {
         $this->nextPage = $page;
 
@@ -168,10 +166,8 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
 
     /**
      * getNextPage
-     *
-     * @return int
      */
-    public function getNextPage()
+    public function getNextPage(): ?int
     {
         return $this->nextPage;
     }

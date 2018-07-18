@@ -15,7 +15,8 @@
     "require-dev": {
         "symfony/stopwatch": "^3.0",
         "symfony/http-foundation": "^3.0",
-        "mapado/php-cs-fixer-config": "^2.1"
+        "mapado/php-cs-fixer-config": "^2.1",
+        "phpstan/phpstan": "^0.10.1"
     },
     "license": "GPL-3.0+",
     "authors": [

@@ -2,9 +2,9 @@
 
 namespace Mapado\ElasticaQueryBundle\DataCollector;
 
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 class ElasticaDataCollector extends DataCollector
 {
@@ -58,6 +58,11 @@ class ElasticaDataCollector extends DataCollector
     public function addQuery(array $request, \Elastica\Response $response)
     {
         $this->data['queries'][] = ['request' => $request, 'response' => $response];
+    }
+
+    public function reset()
+    {
+        $this->data = ['queries' => []];
     }
 
     /**

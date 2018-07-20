@@ -24,5 +24,10 @@
             "name": "Julien Deniau",
             "email": "julien.deniau@gmail.com"
         }
-    ]
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0-dev"
+        }
+    }
 }

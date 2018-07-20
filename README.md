@@ -64,9 +64,9 @@ mapado_elastica_query:
     document_managers:
         tweety:
             type: mapado.elastica.type.twitter.tweet
-            query_builder_classname: "Acme\\Demo\\QueryBuilder\\TweetyQueryBuilder"
+            query_builder_classname: 'Acme\Demo\QueryBuilder\TweetyQueryBuilder'
 ```
 
-The QueryBuilder class must inherit from Mapado\ElasticaQueryBundle\QueryBuilder
+The QueryBuilder class must inherit from [`Mapado\ElasticaQueryBundle\QueryBuilder`](https://github.com/mapado/elastica-query-bundle/blob/master/src/QueryBuilder.php)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae/big.png)](https://insight.sensiolabs.com/projects/6994e137-7c92-4f3f-9554-b0e0c18d3aae)

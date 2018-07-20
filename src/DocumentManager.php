@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Doctrine\Common\EventManager;
+use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Type;
+use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 use Mapado\ElasticaQueryBundle\Event\ObjectEvent;
 use Mapado\ElasticaQueryBundle\Event\ObjectManagerEvent;
 use Mapado\ElasticaQueryBundle\Exception\NoMoreResultException;
-use Mapado\ElasticaQueryBundle\DataTransformer\DataTransformerInterface;
 use Mapado\ElasticaQueryBundle\Model\SearchResult;
-use Mapado\ElasticaQueryBundle\QueryBuilder;
 
 class DocumentManager
 {
@@ -18,7 +20,6 @@ class DocumentManager
      * type
      *
      * @var Type
-     * @access private
      */
     private $type;
 
@@ -26,15 +27,13 @@ class DocumentManager
      * eventManager
      *
      * @var EventManager
-     * @access private
      */
     private $eventManager;
 
     /**
      * dataTransformer
      *
-     * @var DataTransformerInterface
-     * @access private
+     * @var ?DataTransformerInterface
      */
     private $dataTransformer;
 
@@ -42,16 +41,11 @@ class DocumentManager
      * queryBuilderClass
      *
      * @var string
-     * @access private
      */
     private $queryBuilderClass;
 
     /**
      * __construct
-     *
-     * @param Type $type
-     * @param EventManager $eventManager
-     * @access public
      */
     public function __construct(Type $type, EventManager $eventManager, $queryBuilderClass = null)
     {
@@ -62,26 +56,18 @@ class DocumentManager
 
     /**
      * setDataTransformer
-     *
-     * @param DataTransformerInterface $dataTransformer
-     * @access public
-     * @return DocumentManager
      */
-    public function setDataTransformer(DataTransformerInterface $dataTransformer)
+    public function setDataTransformer(DataTransformerInterface $dataTransformer): self
     {
         $this->dataTransformer = $dataTransformer;
+
         return $this;
     }
 
     /**
      * createQueryBuilder
-     *
-     * @param Type $index
-     * @return \Mapado\FrontBundle\Search\ActivityQueryBuilder
-     * @access public
-     * @return QueryBuilder
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         if ($this->queryBuilderClass) {
             $queryBuilderClass = $this->queryBuilderClass;
@@ -100,12 +86,8 @@ class DocumentManager
 
     /**
      * handleQueryBuilder
-     *
-     * @param QueryBuilder $eqb
-     * @access public
-     * @return QueryBuilder
      */
-    public function handleQueryBuilder(QueryBuilder $eqb)
+    public function handleQueryBuilder(QueryBuilder $eqb): QueryBuilder
     {
         $this->eventManager->dispatchEvent('loadClassMetadata', new ObjectManagerEvent($this));
 
@@ -114,11 +96,8 @@ class DocumentManager
 
     /**
      * getEventManager
-     *
-     * @access public
-     * @return EventManager
      */
-    public function getEventManager()
+    public function getEventManager(): EventManager
     {
         return $this->eventManager;
     }
@@ -129,26 +108,21 @@ class DocumentManager
      *
      * @param mixed $event
      * @param mixed $listener
-     * @access public
-     * @return mixed
      */
-    public function addEventListener($event, $listener)
+    public function addEventListener($event, $listener): void
     {
-        return $this->eventManager->addEventListener($event, $listener);
+        $this->eventManager->addEventListener($event, $listener);
     }
 
     /**
      * getElasticType
-     *
-     * @access public
-     * @return Type
      */
-    public function getElasticType()
+    public function getElasticType(): Type
     {
         return $this->type;
     }
 
-    public function handleResultSet(ResultSet $resultSet)
+    public function handleResultSet(ResultSet $resultSet): SearchResult
     {
         if (!$this->dataTransformer) {
             $results = $resultSet;
@@ -157,6 +131,10 @@ class DocumentManager
             if ($count > 0) {
                 $results = new \SplFixedArray($count);
                 foreach ($resultSet as $i => $result) {
+                    if (!$result instanceof Result) {
+                        continue;
+                    }
+
                     $item = $this->dataTransformer->transform($result);
                     $results[$i] = $item;
 
@@ -181,32 +159,27 @@ class DocumentManager
 
     /**
      * getNextPage
-     *
-     * @param ResultSet $results
-     * @param int $from
-     * @access private
-     * @return int
      */
-    private function getNextPage(ResultSet $results)
+    private function getNextPage(ResultSet $results): ?int
     {
         $query = $results->getQuery();
         $from = $query->hasParam('from') ? $query->getParam('from') : 0;
         $size = $query->hasParam('size') ? $query->getParam('size') : 10;
         $hits = $results->getTotalHits();
 
-        if (count($results) == 0 && $from > 0) {
+        if (0 == count($results) && $from > 0) {
             $msg = 'current page is higher than max page';
             throw new NoMoreResultException($msg);
         } elseif ($hits > $from + $size) {
             if ($size > 0) {
-                $nextPage = ((int) $from / $size) + 2;
+                $tmp = (int) ($from / $size);
+                $nextPage = $tmp + 2;
             } else {
                 $nextPage = 2;
             }
         } else {
             $nextPage = null;
         }
-
 
         return $nextPage;
     }

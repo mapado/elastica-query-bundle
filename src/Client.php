@@ -1,64 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Client as BaseClient;
-use Elastica\Request;
 use Elastica\Exception\ResponseException;
-use Symfony\Component\Stopwatch\Stopwatch;
-
+use Elastica\Request;
 use Mapado\ElasticaQueryBundle\DataCollector\ElasticaDataCollector;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class Client extends BaseClient
 {
     /**
      * stopwatch
      *
-     * @var Stopwatch|null
-     * @access private
+     * @var ?Stopwatch
      */
     private $stopwatch;
 
     /**
      * dataCollector
      *
-     * @var ElasticaDataCollector
-     * @access private
+     * @var ?ElasticaDataCollector
      */
     private $dataCollector;
 
     /**
      * setStopwatch
-     *
-     * @param Stopwatch $stopwatch
-     * @access public
-     * @return Client
      */
-    public function setStopwatch(Stopwatch $stopwatch)
+    public function setStopwatch(Stopwatch $stopwatch): self
     {
         $this->stopwatch = $stopwatch;
+
         return $this;
     }
 
     /**
      * setDataCollector
-     *
-     * @param ElasticaDataCollector $dataCollector
-     * @access public
-     * @return Client
      */
-    public function setDataCollector(ElasticaDataCollector $dataCollector)
+    public function setDataCollector(ElasticaDataCollector $dataCollector): self
     {
         $this->dataCollector = $dataCollector;
+
         return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function request($path, $method = Request::GET, $data = array(), array $query = array())
+    public function request($path, $method = Request::GET, $data = [], array $query = [])
     {
-        $exceptionOccured = false;
+        $occuredException = null;
 
         if (isset($this->stopwatch)) {
             $this->stopwatch->start('mpd_elastica', 'mapado_elastica_query');
@@ -68,7 +61,7 @@ class Client extends BaseClient
             $response = parent::request($path, $method, $data, $query);
         } catch (ResponseException $e) {
             $response = $e->getResponse();
-            $exceptionOccured = true;
+            $occuredException = $e;
         }
 
         if (isset($this->dataCollector)) {
@@ -82,8 +75,8 @@ class Client extends BaseClient
             $this->stopwatch->stop('mpd_elastica');
         }
 
-        if ($exceptionOccured) {
-            throw $e;
+        if (null !== $occuredException) {
+            throw $occuredException;
         }
 
         return $response;

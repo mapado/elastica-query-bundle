@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
+use Elastica\Filter\BoolAnd;
+use Elastica\Filter\BoolFilter;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query as ElasticaQuery;
+use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 class QueryBuilder
 {
@@ -14,7 +19,6 @@ class QueryBuilder
      * documentManager
      *
      * @var DocumentManager
-     * @access private
      */
     private $documentManager;
 
@@ -22,7 +26,6 @@ class QueryBuilder
      * filterList
      *
      * @var array
-     * @access private
      */
     private $filterList;
 
@@ -30,7 +33,6 @@ class QueryBuilder
      * queryList
      *
      * @var array
-     * @access private
      */
     private $queryList;
 
@@ -38,7 +40,6 @@ class QueryBuilder
      * sortList
      *
      * @var array
-     * @access private
      */
     private $sortList;
 
@@ -46,7 +47,6 @@ class QueryBuilder
      * aggregationList
      *
      * @var array
-     * @access private
      */
     private $aggregationList;
 
@@ -54,7 +54,6 @@ class QueryBuilder
      * firstResults
      *
      * @var int
-     * @access private
      */
     private $firstResults;
 
@@ -62,7 +61,6 @@ class QueryBuilder
      * maxResults
      *
      * @var int
-     * @access private
      */
     private $maxResults;
 
@@ -70,7 +68,6 @@ class QueryBuilder
      * minScore
      *
      * @var int
-     * @access private
      */
     private $minScore;
 
@@ -78,7 +75,6 @@ class QueryBuilder
      * __construct
      *
      * @param DocumentManager $documentManager
-     * @access public
      */
     public function __construct(DocumentManager $documentManager)
     {
@@ -90,27 +86,21 @@ class QueryBuilder
 
     /**
      * addFilter
-     *
-     * @param AbstractFilter $filter
-     * @access public
-     * @return QueryBuilder
      */
-    public function addFilter(AbstractFilter $filter)
+    public function addFilter(AbstractFilter $filter): self
     {
         $this->filterList[] = $filter;
+
         return $this;
     }
 
     /**
      * addQuery
-     *
-     * @param AbstractQuery $query
-     * @access public
-     * @return QueryBuilder
      */
-    public function addQuery(AbstractQuery $query)
+    public function addQuery(AbstractQuery $query): self
     {
         $this->queryList[] = $query;
+
         return $this;
     }
 
@@ -118,73 +108,58 @@ class QueryBuilder
      * addSort
      *
      * @param mixed $sort Sort parameter
-     * @access public
-     * @return QueryBuilder
      */
-    public function addSort($sort)
+    public function addSort($sort): self
     {
         $this->sortList[] = $sort;
+
         return $this;
     }
 
     /**
      * addAggregation
-     *
-     * @param AbstractAggregation $aggregation
-     * @access public
-     * @return QueryBuilder
      */
-    public function addAggregation(AbstractAggregation $aggregation)
+    public function addAggregation(AbstractAggregation $aggregation): self
     {
         $this->aggregationList[] = $aggregation;
+
         return $this;
     }
 
     /**
      * setMaxResults
-     *
-     * @param mixed $maxResults
-     * @access public
-     * @return QueryBuilder
      */
-    public function setMaxResults($maxResults)
+    public function setMaxResults(int $maxResults): self
     {
         $this->maxResults = $maxResults;
+
         return $this;
     }
 
     /**
      * setFirstResults
-     *
-     * @param int $firstResults
-     * @access public
-     * @return QueryBuilder
      */
-    public function setFirstResults($firstResults)
+    public function setFirstResults(int $firstResults): self
     {
         $this->firstResults = $firstResults;
+
         return $this;
     }
 
     /**
      * setMinScore
-     *
-     * @access public
-     * @return QueryBuilder
      */
-    public function setMinScore($minScore)
+    public function setMinScore(int $minScore): self
     {
         $this->minScore = $minScore;
+
         return $this;
     }
 
     /**
      * getElasticQuery
-     *
-     * @access public
-     * @return Query
      */
-    public function getElasticQuery()
+    public function getElasticQuery(): Query
     {
         if ($this->filterList) {
             $filteredQuery = new ElasticaQuery\Filtered($this->getQuery(), $this->getFilter());
@@ -221,28 +196,22 @@ class QueryBuilder
 
     /**
      * getResult
-     *
-     * @access public
-     * @return Elastica\ResultSet
      */
-    public function getResult()
+    public function getResult(): SearchResult
     {
         return $this->getElasticQuery()->getResult();
     }
 
     /**
      * getQuery
-     *
-     * @access private
-     * @return \Elastica\Query\AbstractQuery
      */
-    private function getQuery()
+    private function getQuery(): ?AbstractQuery
     {
         if (!$this->queryList) {
             return null;
         }
 
-        if (count($this->queryList) == 1) {
+        if (1 == count($this->queryList)) {
             return current($this->queryList);
         }
 
@@ -256,20 +225,16 @@ class QueryBuilder
 
     /**
      * getFilter
-     *
-     * @access private
-     * @return AbstractFilter
      */
-    private function getFilter()
+    private function getFilter(): ?AbstractFilter
     {
         if (!$this->filterList) {
             return null;
         }
 
-        if (count($this->filterList) == 1) {
+        if (1 == count($this->filterList)) {
             return current($this->filterList);
         }
-
 
         $boolFilters = [];
         $andFilters = [];
@@ -284,22 +249,23 @@ class QueryBuilder
         $boolFilter = null;
         $nbBoolFilters = count($boolFilters);
         if ($nbBoolFilters > 1) {
-            $boolFilter = new Filter\BoolFilter();
+            $boolFilter = new BoolFilter();
             foreach ($boolFilters as $tmpFilter) {
                 $boolFilter->addMust($tmpFilter);
             }
 
             array_unshift($andFilters, $boolFilter);
-        } elseif ($nbBoolFilters == 1) {
+        } elseif (1 == $nbBoolFilters) {
             $andFilters = array_merge($boolFilters, $andFilters);
         }
 
         $nbAndFilters = count($andFilters);
-        if ($nbAndFilters == 1) {
+        if (1 == $nbAndFilters) {
             return current($andFilters);
         } elseif ($nbAndFilters > 1) {
-            $filter = new Filter\BoolAnd();
+            $filter = new BoolAnd();
             $filter->setFilters($andFilters);
+
             return $filter;
         }
 
@@ -308,19 +274,21 @@ class QueryBuilder
 
     /**
      * select if the filter is more in a `BoolAnd` or a `BoolFilter`.
-     * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
      *
-     * @param Filter\AbstractFilter $filter
-     * @access private
-     * @return void
+     * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
      */
-    private function isAndFilter(Filter\AbstractFilter $filter)
+    private function isAndFilter(AbstractFilter $filter): bool
     {
-        $filterName = substr(get_class($filter), 16);
-
-        return $filterName === 'Script'
-            || $filterName === 'NumericRange'
-            ||  substr($filterName, 0, 3) === 'Geo'
+        return $filter instanceof Filter\Script
+            || $filter instanceof Filter\NumericRange
+            || $filter instanceof Filter\NumericRange
+            || $filter instanceof Filter\GeoBoundingBox
+            || $filter instanceof Filter\GeoDistance
+            || $filter instanceof Filter\GeoDistanceRange
+            || $filter instanceof Filter\GeoPolygon
+            || $filter instanceof Filter\GeoShapePreIndexed
+            || $filter instanceof Filter\GeoShapeProvided
+            || $filter instanceof Filter\GeohashCell
         ;
     }
 }

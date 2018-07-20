@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -13,7 +16,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
@@ -25,6 +28,28 @@ class Configuration implements ConfigurationInterface
         $this->addDocumentManagersSection($rootNode);
 
         return $treeBuilder;
+    }
+
+    /**
+     * Returns the array node used for "types".
+     */
+    protected function getTypesNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('types');
+
+        if (!$node instanceof ArrayNodeDefinition) {
+            throw new \InvalidArgumentException('node must be an instance of ' . ArrayNodeDefinition::class);
+        }
+
+        $node
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+                ->treatNullLike([])
+            ->end()
+        ;
+
+        return $node;
     }
 
     /**
@@ -44,10 +69,10 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('url')
                                 ->validate()
                                     ->ifTrue(function ($url) {
-                                        return $url && substr($url, -1) !== '/';
+                                        return $url && '/' !== substr($url, -1);
                                     })
                                     ->then(function ($url) {
-                                        return $url.'/';
+                                        return $url . '/';
                                     })
                                 ->end()
                             ->end()
@@ -106,23 +131,5 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
-    }
-
-    /**
-     * Returns the array node used for "types".
-     */
-    protected function getTypesNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('types');
-
-        $node
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-                ->treatNullLike(array())
-            ->end()
-        ;
-
-        return $node;
     }
 }

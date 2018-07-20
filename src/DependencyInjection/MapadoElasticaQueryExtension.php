@@ -1,12 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\ElasticaQueryBundle\DependencyInjection;
 
+use Doctrine\Common\EventManager;
+use Elastica\Index;
+use Elastica\Type;
+use Mapado\ElasticaQueryBundle\Client;
+use Mapado\ElasticaQueryBundle\DocumentManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -21,7 +28,6 @@ class MapadoElasticaQueryExtension extends Extension
      * clients
      *
      * @var array
-     * @access private
      */
     private $clients;
 
@@ -29,19 +35,18 @@ class MapadoElasticaQueryExtension extends Extension
      * types
      *
      * @var array
-     * @access private
      */
     private $types;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
         if (empty($config['clients']) || empty($config['indexes'])) {
@@ -59,15 +64,13 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $clients
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatClientSection(array $clients, ContainerBuilder $container)
     {
         // manage clients
         foreach ($clients as $clientName => $client) {
             $clientServiceId = sprintf('mapado.elastica.client.%s', $clientName);
-            $clientService = new Definition('Mapado\ElasticaQueryBundle\Client');
+            $clientService = new Definition(Client::class);
             $clientService->addArgument(
                 [
                     'host' => $client['host'],
@@ -96,8 +99,6 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $indexes
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatIndexSection(array $indexes, ContainerBuilder $container)
     {
@@ -106,7 +107,7 @@ class MapadoElasticaQueryExtension extends Extension
             // register the index
             $realIndexName = !empty($index['index_name']) ? $index['index_name'] : $indexName;
             $indexServiceId = sprintf('mapado.elastica.index.%s', $indexName);
-            $indexService = new Definition('Elastica\Index', [$realIndexName]);
+            $indexService = new Definition(Index::class, [$realIndexName]);
             $container->setDefinition($indexServiceId, $indexService)
                 ->setFactory([
                     $this->clients[$index['client']],
@@ -120,14 +121,14 @@ class MapadoElasticaQueryExtension extends Extension
                 $typeList = array_keys($index['types']);
                 foreach ($typeList as $typeName) {
                     $typeServiceId = sprintf('mapado.elastica.type.%s.%s', $indexName, $typeName);
-                    $typeService = new Definition('Elastica\Type', [$typeName]);
+                    $typeService = new Definition(Type::class, [$typeName]);
 
                     $this->types[$typeServiceId] = new Reference($typeServiceId);
 
                     $container->setDefinition($typeServiceId, $typeService)
                         ->setFactory([
                             $indexRef,
-                            'getType'
+                            'getType',
                         ]);
                 }
             }
@@ -139,8 +140,6 @@ class MapadoElasticaQueryExtension extends Extension
      *
      * @param array $documentManagers
      * @param ContainerBuilder $container
-     * @access private
-     * @return void
      */
     private function treatDocumentManagerSection(array $documentManagers, ContainerBuilder $container)
     {
@@ -150,16 +149,18 @@ class MapadoElasticaQueryExtension extends Extension
             $serviceList[$name] = $serviceId;
 
             $service = new Definition(
-                'Mapado\ElasticaQueryBundle\DocumentManager',
+                DocumentManager::class,
                 [
                     $this->types[$documentManager['type']],
-                    new Definition('Doctrine\Common\EventManager'),
+                    new Definition(EventManager::class),
                     !empty($documentManager['query_builder_classname']) ?
                         $documentManager['query_builder_classname'] : null,
                 ]
             );
 
-            $definition = $container->setDefinition($serviceId, $service);
+            $definition = $container->setDefinition($serviceId, $service)
+                ->setPublic(true)
+            ;
 
             if (!empty($documentManager['data_transformer'])) {
                 $definition->addMethodCall(

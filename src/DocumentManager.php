@@ -46,9 +46,6 @@ class DocumentManager
 
     /**
      * __construct
-     *
-     * @param Type $type
-     * @param EventManager $eventManager
      */
     public function __construct(Type $type, EventManager $eventManager, $queryBuilderClass = null)
     {
@@ -89,12 +86,8 @@ class DocumentManager
 
     /**
      * handleQueryBuilder
-     *
-     * @param QueryBuilder $eqb
-     *
-     * @return QueryBuilder
      */
-    public function handleQueryBuilder(QueryBuilder $eqb)
+    public function handleQueryBuilder(QueryBuilder $eqb): QueryBuilder
     {
         $this->eventManager->dispatchEvent('loadClassMetadata', new ObjectManagerEvent($this));
 
@@ -103,10 +96,8 @@ class DocumentManager
 
     /**
      * getEventManager
-     *
-     * @return EventManager
      */
-    public function getEventManager()
+    public function getEventManager(): EventManager
     {
         return $this->eventManager;
     }
@@ -125,15 +116,13 @@ class DocumentManager
 
     /**
      * getElasticType
-     *
-     * @return Type
      */
-    public function getElasticType()
+    public function getElasticType(): Type
     {
         return $this->type;
     }
 
-    public function handleResultSet(ResultSet $resultSet)
+    public function handleResultSet(ResultSet $resultSet): SearchResult
     {
         if (!$this->dataTransformer) {
             $results = $resultSet;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Query as ElasticaQuery;
+use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 /**
  * Class Query
@@ -22,12 +23,8 @@ class Query extends ElasticaQuery
 
     /**
      * setDocumentManager
-     *
-     * @param DocumentManager $documentManager
-     *
-     * @return Query
      */
-    public function setDocumentManager(DocumentManager $documentManager)
+    public function setDocumentManager(DocumentManager $documentManager): self
     {
         $this->documentManager = $documentManager;
 
@@ -37,7 +34,7 @@ class Query extends ElasticaQuery
     /**
      * getResults
      */
-    public function getResult()
+    public function getResult(): SearchResult
     {
         $resultSet = $this->documentManager->getElasticType()->search($this);
 

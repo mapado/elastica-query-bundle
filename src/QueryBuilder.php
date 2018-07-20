@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Aggregation\AbstractAggregation;
+use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
 use Elastica\Filter\BoolAnd;
 use Elastica\Filter\BoolFilter;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query as ElasticaQuery;
-use Elastica\ResultSet;
+use Mapado\ElasticaQueryBundle\Model\SearchResult;
 
 class QueryBuilder
 {
@@ -196,7 +197,7 @@ class QueryBuilder
     /**
      * getResult
      */
-    public function getResult(): ResultSet
+    public function getResult(): SearchResult
     {
         return $this->getElasticQuery()->getResult();
     }
@@ -276,13 +277,18 @@ class QueryBuilder
      *
      * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
      */
-    private function isAndFilter(AbstractFilter $filter)
+    private function isAndFilter(AbstractFilter $filter): bool
     {
-        $filterName = substr(get_class($filter), 16);
-
-        return 'Script' === $filterName
-            || 'NumericRange' === $filterName
-            || 'Geo' === substr($filterName, 0, 3)
+        return $filter instanceof Filter\Script
+            || $filter instanceof Filter\NumericRange
+            || $filter instanceof Filter\NumericRange
+            || $filter instanceof Filter\GeoBoundingBox
+            || $filter instanceof Filter\GeoDistance
+            || $filter instanceof Filter\GeoDistanceRange
+            || $filter instanceof Filter\GeoPolygon
+            || $filter instanceof Filter\GeoShapePreIndexed
+            || $filter instanceof Filter\GeoShapeProvided
+            || $filter instanceof Filter\GeohashCell
         ;
     }
 }

@@ -72,22 +72,16 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
 
     /**
      * Gets the value of baseResults
-     *
-     * @return ResultSet
      */
-    public function getBaseResults()
+    public function getBaseResults(): ResultSet
     {
         return $this->baseResults;
     }
 
     /**
      * Sets the value of baseResults
-     *
-     * @param ResultSet $baseResults description
-     *
-     * @return SearchResult
      */
-    public function setBaseResults(ResultSet $baseResults)
+    public function setBaseResults(ResultSet $baseResults): self
     {
         $this->baseResults = $baseResults;
 
@@ -109,7 +103,7 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
      *
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
@@ -117,7 +111,7 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * next
      */
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
@@ -125,27 +119,23 @@ class SearchResult implements \Iterator, \Countable, \JsonSerializable
     /**
      * rewind
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
     /**
      * valid
-     *
-     * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->results[$this->position]);
     }
 
     /**
      * count
-     *
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         if (is_array($this->results) || $this->results instanceof \Countable) {
             return count($this->results);

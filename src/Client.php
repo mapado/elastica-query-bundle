@@ -15,25 +15,21 @@ class Client extends BaseClient
     /**
      * stopwatch
      *
-     * @var Stopwatch|null
+     * @var ?Stopwatch
      */
     private $stopwatch;
 
     /**
      * dataCollector
      *
-     * @var ElasticaDataCollector
+     * @var ?ElasticaDataCollector
      */
     private $dataCollector;
 
     /**
      * setStopwatch
-     *
-     * @param Stopwatch $stopwatch
-     *
-     * @return Client
      */
-    public function setStopwatch(Stopwatch $stopwatch)
+    public function setStopwatch(Stopwatch $stopwatch): self
     {
         $this->stopwatch = $stopwatch;
 
@@ -42,12 +38,8 @@ class Client extends BaseClient
 
     /**
      * setDataCollector
-     *
-     * @param ElasticaDataCollector $dataCollector
-     *
-     * @return Client
      */
-    public function setDataCollector(ElasticaDataCollector $dataCollector)
+    public function setDataCollector(ElasticaDataCollector $dataCollector): self
     {
         $this->dataCollector = $dataCollector;
 

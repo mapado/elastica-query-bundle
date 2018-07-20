@@ -59,12 +59,8 @@ class DocumentManager
 
     /**
      * setDataTransformer
-     *
-     * @param DataTransformerInterface $dataTransformer
-     *
-     * @return DocumentManager
      */
-    public function setDataTransformer(DataTransformerInterface $dataTransformer)
+    public function setDataTransformer(DataTransformerInterface $dataTransformer): self
     {
         $this->dataTransformer = $dataTransformer;
 

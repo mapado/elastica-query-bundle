@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Mapado\ElasticaQueryBundle;
 
 use Elastica\Aggregation\AbstractAggregation;
-use Elastica\Filter;
 use Elastica\Filter\AbstractFilter;
+use Elastica\Filter\BoolAnd;
+use Elastica\Filter\BoolFilter;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query as ElasticaQuery;
+use Elastica\ResultSet;
 
 class QueryBuilder
 {
@@ -83,12 +85,8 @@ class QueryBuilder
 
     /**
      * addFilter
-     *
-     * @param AbstractFilter $filter
-     *
-     * @return QueryBuilder
      */
-    public function addFilter(AbstractFilter $filter)
+    public function addFilter(AbstractFilter $filter): self
     {
         $this->filterList[] = $filter;
 
@@ -97,12 +95,8 @@ class QueryBuilder
 
     /**
      * addQuery
-     *
-     * @param AbstractQuery $query
-     *
-     * @return QueryBuilder
      */
-    public function addQuery(AbstractQuery $query)
+    public function addQuery(AbstractQuery $query): self
     {
         $this->queryList[] = $query;
 
@@ -113,10 +107,8 @@ class QueryBuilder
      * addSort
      *
      * @param mixed $sort Sort parameter
-     *
-     * @return QueryBuilder
      */
-    public function addSort($sort)
+    public function addSort($sort): self
     {
         $this->sortList[] = $sort;
 
@@ -125,12 +117,8 @@ class QueryBuilder
 
     /**
      * addAggregation
-     *
-     * @param AbstractAggregation $aggregation
-     *
-     * @return QueryBuilder
      */
-    public function addAggregation(AbstractAggregation $aggregation)
+    public function addAggregation(AbstractAggregation $aggregation): self
     {
         $this->aggregationList[] = $aggregation;
 
@@ -139,12 +127,8 @@ class QueryBuilder
 
     /**
      * setMaxResults
-     *
-     * @param mixed $maxResults
-     *
-     * @return QueryBuilder
      */
-    public function setMaxResults($maxResults)
+    public function setMaxResults(int $maxResults): self
     {
         $this->maxResults = $maxResults;
 
@@ -153,12 +137,8 @@ class QueryBuilder
 
     /**
      * setFirstResults
-     *
-     * @param int $firstResults
-     *
-     * @return QueryBuilder
      */
-    public function setFirstResults($firstResults)
+    public function setFirstResults(int $firstResults): self
     {
         $this->firstResults = $firstResults;
 
@@ -167,10 +147,8 @@ class QueryBuilder
 
     /**
      * setMinScore
-     *
-     * @return QueryBuilder
      */
-    public function setMinScore($minScore)
+    public function setMinScore(int $minScore): self
     {
         $this->minScore = $minScore;
 
@@ -179,10 +157,8 @@ class QueryBuilder
 
     /**
      * getElasticQuery
-     *
-     * @return Query
      */
-    public function getElasticQuery()
+    public function getElasticQuery(): Query
     {
         if ($this->filterList) {
             $filteredQuery = new ElasticaQuery\Filtered($this->getQuery(), $this->getFilter());
@@ -219,10 +195,8 @@ class QueryBuilder
 
     /**
      * getResult
-     *
-     * @return \Elastica\ResultSet
      */
-    public function getResult()
+    public function getResult(): ResultSet
     {
         return $this->getElasticQuery()->getResult();
     }
@@ -274,7 +248,7 @@ class QueryBuilder
         $boolFilter = null;
         $nbBoolFilters = count($boolFilters);
         if ($nbBoolFilters > 1) {
-            $boolFilter = new Filter\BoolFilter();
+            $boolFilter = new BoolFilter();
             foreach ($boolFilters as $tmpFilter) {
                 $boolFilter->addMust($tmpFilter);
             }
@@ -288,7 +262,7 @@ class QueryBuilder
         if (1 == $nbAndFilters) {
             return current($andFilters);
         } elseif ($nbAndFilters > 1) {
-            $filter = new Filter\BoolAnd();
+            $filter = new BoolAnd();
             $filter->setFilters($andFilters);
 
             return $filter;
@@ -301,10 +275,8 @@ class QueryBuilder
      * select if the filter is more in a `BoolAnd` or a `BoolFilter`.
      *
      * @see http://www.elasticsearch.org/blog/all-about-elasticsearch-filter-bitsets/
-     *
-     * @param Filter\AbstractFilter $filter
      */
-    private function isAndFilter(Filter\AbstractFilter $filter)
+    private function isAndFilter(AbstractFilter $filter)
     {
         $filterName = substr(get_class($filter), 16);
 

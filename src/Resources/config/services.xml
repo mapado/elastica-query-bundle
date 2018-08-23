@@ -6,7 +6,11 @@
 
     <services>
         <service id="mapado.elastica.data_collector" class="Mapado\ElasticaQueryBundle\DataCollector\ElasticaDataCollector">
-            <tag name="data_collector" template="Collector/mapado_elastica.html.twig" id="mapado_elastica" />
+            <tag
+                name="data_collector"
+                template="@MapadoElasticaQuery/Collector/mapado_elastica.html.twig"
+                id="mapado_elastica"
+            />
         </service>
     </services>
 </container>

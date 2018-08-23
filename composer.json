@@ -6,9 +6,9 @@
     },
     "require": {
         "php": "^7.2",
-        "symfony/http-kernel": "^2.7 || ^3.0 || ^4.0",
-        "symfony/config": "^2.7 || ^3.0 || ^4.0",
-        "symfony/dependency-injection": "^2.7 || ^3.0 || ^4.0",
+        "symfony/http-kernel": "^2.7|^3.0|^4.0",
+        "symfony/config": "^2.7|^3.0|^4.0",
+        "symfony/dependency-injection": "^2.7|^3.0|^4.0",
         "doctrine/common": "^2.0",
         "ruflin/elastica": "^2.2"
     },
@@ -24,10 +24,5 @@
             "name": "Julien Deniau",
             "email": "julien.deniau@gmail.com"
         }
-    ],
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.0-dev"
-        }
-    }
+    ]
 }

@@ -1,7 +1,13 @@
 CHANGELOG
 ===================
 
-## Unreleased - 3.0.0
+## 3.0.1 - 2018-08-23
+
+### Changed
+
+* fix issue with data collector template
+
+## 3.0.0 - 2018-08-23
 
 ### Added 
 
